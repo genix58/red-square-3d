@@ -1,0 +1,291 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Красная площадь 3D</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Красная площадь в реальном масштабе: интерактивная 3D-модель и путеводитель по главной площади Москвы.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Unbounded:wght@500;700;800&display=swap">
+<style>
+:root{
+  /* Layout: чёрная страница, красный квадрат как знак; 3D-модель — центральный экран, текст на сетке до 1240px, одна белая полоса для истории */
+  --ink:#0a0909;
+  --ink-2:#141212;
+  --line:#2c2525;
+  --fg:#f6f3f1;
+  --mute:#9b9291;
+  --red:#e3202a;
+  --white:#ffffff;
+  --black:#0a0909;
+  --glass:rgba(10,9,9,.78);
+  --glass-line:rgba(255,255,255,.14);
+  --f-display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --f-body:"Golos Text","Segoe UI",Roboto,Arial,sans-serif;
+  --f-mono:"JetBrains Mono",Consolas,"Courier New",monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--ink);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--ink);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--ink)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mono{font-family:var(--f-mono);font-size:11.5px;line-height:1.6;letter-spacing:.08em;text-transform:uppercase}
+.sq{display:inline-block;width:12px;height:12px;background:var(--red);flex:none}
+
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--ink);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:60px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--f-display);font-weight:700;font-size:14px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;min-width:0}
+.nav nav{display:flex;gap:4px;flex-wrap:wrap}
+.nav nav a{text-decoration:none;font-size:14px;color:var(--mute);padding:8px 10px;white-space:nowrap}
+.nav nav a:hover{color:var(--fg)}
+@media (max-width:620px){.nav nav a:not(.nav-cta){display:none}.brand{font-size:12.5px;letter-spacing:.04em}}
+.nav-cta{color:var(--fg)!important;background:var(--red)}
+
+.hero{padding-block:56px 32px}
+.eyebrow{color:var(--mute);margin:0 0 20px;display:flex;align-items:center;gap:10px}
+.eyebrow span:last-child{min-width:0}
+@media (max-width:420px){.eyebrow{font-size:9.5px;letter-spacing:.03em}}
+h1{font-family:var(--f-display);font-weight:800;text-transform:uppercase;font-size:clamp(40px,10vw,132px);line-height:.92;letter-spacing:-.03em;margin:0}
+h1 span{display:block;color:var(--red)}
+.hero-copy{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 48px;margin-top:32px;padding-top:20px;border-top:1px solid var(--line)}
+.lead{font-size:18px;line-height:1.55;margin:0;max-width:44ch}
+.lead-sub{color:var(--mute);font-size:15px;margin:0;max-width:46ch}
+@media (max-width:820px){.hero{padding-block:36px 24px}.hero-copy{grid-template-columns:1fr;margin-top:24px}}
+
+.viewer-band{padding-block:0 8px}
+.viewer{position:relative;height:clamp(480px,76vh,820px);background:var(--black);border:1px solid var(--line);overflow:hidden;user-select:none;-webkit-user-select:none}
+.viewer canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.viewer canvas:active{cursor:grabbing}
+.viewer canvas.hot{cursor:pointer}
+@media (max-width:620px){.viewer{height:540px}}
+.v-top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;gap:16px;padding:14px 16px;pointer-events:none;color:var(--fg);text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.v-top p{margin:0;display:flex;align-items:center;gap:8px;min-width:0}
+@media (max-width:620px){.v-top .v-hint{display:none}}
+.v-bottom{position:absolute;left:0;right:0;bottom:0;padding:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;justify-content:space-between;pointer-events:none}
+.v-bottom>*{pointer-events:auto}
+.chips{display:flex;gap:6px;overflow-x:auto;max-width:100%;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip,.tool{font-family:var(--f-body);font-size:13px;line-height:1;background:var(--glass);border:1px solid var(--glass-line);color:var(--fg);padding:9px 11px;white-space:nowrap;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.chip:hover,.tool:hover{border-color:var(--red)}
+.chip[aria-pressed="true"],.tool[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:var(--white)}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.panel{position:absolute;top:52px;right:16px;width:min(340px,calc(100% - 32px));max-height:calc(100% - 140px);overflow:auto;background:var(--ink-2);border:1px solid var(--line);border-top:3px solid var(--red);padding:18px 18px 16px}
+.panel h3{font-family:var(--f-display);font-weight:700;font-size:19px;line-height:1.2;margin:8px 0 6px;text-wrap:balance}
+.panel .p-year{color:var(--red);margin:0}
+.panel .p-meta{color:var(--mute);font-size:13px;margin:0 0 12px}
+.panel .p-text{font-size:14.5px;margin:0 0 12px}
+.panel .p-size{color:var(--mute);margin:0 0 14px}
+.panel-x{position:absolute;top:10px;right:10px;width:30px;height:30px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;font-size:16px;line-height:1}
+.panel-x:hover{border-color:var(--red)}
+.link-btn{background:none;border:0;padding:0;color:var(--fg);font:inherit;font-size:14px;text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:4px;cursor:pointer}
+@media (max-width:620px){.panel{top:auto;bottom:112px;left:12px;right:12px;width:auto;max-height:50%}}
+.tip{position:absolute;pointer-events:none;background:var(--red);color:var(--white);padding:6px 9px;transform:translate(14px,-130%);white-space:nowrap}
+.v-msg{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--mute);background:var(--black)}
+.v-legend{margin:10px 0 0;color:var(--mute);font-size:13px}
+
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding-block:56px}
+.fact{border-top:3px solid var(--red);padding-top:14px}
+.fact b{display:block;white-space:nowrap;font-family:var(--f-display);font-weight:700;font-size:clamp(20px,3.4vw,40px);line-height:1.05;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.fact span{display:block;color:var(--mute);font-size:14px;margin-top:8px;max-width:26ch}
+@media (max-width:820px){.facts{grid-template-columns:repeat(2,minmax(0,1fr));padding-block:40px}}
+
+.sec{padding-block:72px}
+.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:end;margin-bottom:36px}
+.sec-head h2{font-family:var(--f-display);font-weight:800;text-transform:uppercase;font-size:clamp(30px,5vw,60px);line-height:.95;letter-spacing:-.03em;margin:0;text-wrap:balance}
+.sec-head p{margin:0;color:var(--mute);max-width:46ch}
+.sec-head .mono{color:var(--red);margin:0 0 14px;display:block}
+@media (max-width:820px){.sec{padding-block:52px}.sec-head{grid-template-columns:1fr}}
+
+.objs{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.obj{display:grid;grid-template-columns:150px minmax(0,1fr) minmax(0,1.35fr) auto;gap:24px;align-items:start;padding-block:22px;border-bottom:1px solid var(--line)}
+.obj-year{color:var(--red);margin:3px 0 0}
+.obj h3{font-family:var(--f-display);font-weight:700;font-size:19px;line-height:1.2;margin:0 0 6px;text-wrap:balance}
+.obj-meta{color:var(--mute);font-size:13.5px;margin:0}
+.obj-text{margin:0;font-size:15px;max-width:62ch}
+.obj-btn{font-family:var(--f-body);font-size:13px;background:transparent;color:var(--fg);border:1px solid var(--line);padding:10px 12px;cursor:pointer;white-space:nowrap}
+.obj-btn:hover{background:var(--red);border-color:var(--red);color:var(--white)}
+@media (max-width:980px){.obj{grid-template-columns:110px minmax(0,1fr);gap:10px 20px}.obj-text{grid-column:2}.obj-btn{grid-column:2;justify-self:start}}
+@media (max-width:520px){.obj{grid-template-columns:1fr}.obj-text,.obj-btn{grid-column:1}}
+
+.band-white{background:var(--white);color:var(--black)}
+.band-white .sec-head p{color:#5e5655}
+.tl{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px}
+.tl li{display:grid;grid-template-columns:120px minmax(0,1fr);gap:16px;padding-block:16px;border-top:1px solid #e3dddc}
+.tl b{font-family:var(--f-display);font-weight:700;font-size:20px;color:var(--red);font-variant-numeric:tabular-nums;line-height:1.3}
+.tl span{font-size:15.5px}
+@media (max-width:820px){.tl{grid-template-columns:1fr}.tl li{grid-template-columns:96px minmax(0,1fr)}}
+
+.visit{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.card{background:var(--ink-2);border:1px solid var(--line);padding:24px}
+.card h3{font-family:var(--f-display);font-weight:700;font-size:17px;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+.card ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.card li{font-size:15px}
+.card li small{display:block;color:var(--mute);font-size:13px}
+.card p{margin:0;font-size:15px}
+.card p+p{margin-top:10px;color:var(--mute);font-size:14px}
+@media (max-width:900px){.visit{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--line);padding-block:28px 40px;color:var(--mute);font-size:13px}
+.foot-in{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.foot-in p{margin:0;max-width:60ch}
+</style>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top"><span class="sq" aria-hidden="true"></span>Красная площадь</a>
+    <nav aria-label="Разделы">
+      <a href="#objects">Объекты</a>
+      <a href="#history">История</a>
+      <a href="#visit">Как добраться</a>
+      <a class="nav-cta" href="#model">3D-модель</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow mono"><span class="sq" aria-hidden="true"></span><span>Москва · 55°45′14″ с. ш. 37°37′15″ в. д.</span></p>
+      <h1>Красная <span>площадь</span></h1>
+      <div class="hero-copy">
+        <p class="lead">Главная площадь страны в масштабе 1:1: брусчатка от Исторического музея до собора Василия Блаженного и башни Кремля высотой до 71 метра.</p>
+        <p class="lead-sub">Облетите площадь, спуститесь на уровень глаз и посмотрите на неё ночью. Нажмите на здание, чтобы узнать его историю и размеры.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="model" class="viewer-band" aria-label="Интерактивная 3D-модель">
+    <div class="wrap">
+      <div class="viewer" id="viewer">
+        <canvas id="scene" aria-label="3D-модель Красной площади"></canvas>
+        <div class="v-top">
+          <p class="mono"><span class="sq" aria-hidden="true"></span><span id="clock">Масштаб 1:1</span></p>
+          <p class="v-hint mono">Тянуть — вращать · правой кнопкой — сдвиг · колесо — масштаб</p>
+        </div>
+        <aside class="panel" id="panel" hidden aria-live="polite">
+          <button class="panel-x" id="panelClose" type="button" aria-label="Закрыть">×</button>
+          <p class="p-year mono" id="pYear"></p>
+          <h3 id="pName"></h3>
+          <p class="p-meta" id="pMeta"></p>
+          <p class="p-text" id="pText"></p>
+          <p class="p-size mono" id="pSize"></p>
+          <button class="link-btn" id="pReset" type="button">Показать всю площадь</button>
+        </aside>
+        <div class="v-bottom">
+          <div class="chips" id="chips" role="group" aria-label="Объекты на модели"></div>
+          <div class="tools">
+            <button class="tool" id="tRotate" type="button" aria-pressed="true">Облёт</button>
+            <button class="tool" id="tEye" type="button">С уровня глаз</button>
+            <button class="tool" id="tNight" type="button" aria-pressed="false">Ночь</button>
+            <button class="tool" id="tReset" type="button">Сброс</button>
+          </div>
+        </div>
+        <div class="tip mono" id="tip" hidden></div>
+        <div class="v-msg mono" id="vMsg">Строим площадь…</div>
+      </div>
+      <p class="v-legend">Только площадь и здания по её периметру, размеры и расстояния в метрах по открытым данным. Мелкий декор фасадов передан рельефными текстурами.</p>
+    </div>
+  </section>
+
+  <section class="wrap facts" aria-label="Цифры">
+    <div class="fact"><b>330 × 75 м</b><span>длина и ширина площади, около 24 700 м² брусчатки</span></div>
+    <div class="fact"><b>1493</b><span>Иван III велит расчистить место у стен Кремля, так появляется площадь</span></div>
+    <div class="fact"><b>71 м</b><span>высота Спасской башни вместе с рубиновой звездой</span></div>
+    <div class="fact"><b>1990</b><span>Кремль и Красная площадь внесены в список Всемирного наследия ЮНЕСКО</span></div>
+  </section>
+
+  <section id="objects" class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="mono">Маршрут с севера на юг</span>
+          <h2>Что стоит на площади</h2>
+        </div>
+        <p>Пройдите площадь от Воскресенских ворот до спуска к Москве-реке. Кнопка «На модели» перенесёт камеру к зданию.</p>
+      </div>
+      <ol class="objs" id="objList"></ol>
+    </div>
+  </section>
+
+  <section id="history" class="sec band-white">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="mono">Пять веков</span>
+          <h2>История площади</h2>
+        </div>
+        <p>Сначала площадь называли Торгом и Пожаром. Название «Красная», то есть «красивая», закрепилось во второй половине XVII века.</p>
+      </div>
+      <ol class="tl">
+        <li><b>1485–1495</b><span>Возведена кирпичная стена Кремля с башнями. В 1491 году построена Спасская (тогда Фроловская) башня.</span></li>
+        <li><b>1493</b><span>После пожаров Иван III приказывает снести постройки у стен. На их месте возникает торговая площадь.</span></li>
+        <li><b>1555–1561</b><span>Строится Покровский собор, который в народе зовут собором Василия Блаженного.</span></li>
+        <li><b>1624–1625</b><span>Спасская башня получает шатёр и часы мастера Христофора Галовея.</span></li>
+        <li><b>1786</b><span>Матвей Казаков перестраивает Лобное место в его нынешнем виде.</span></li>
+        <li><b>1818</b><span>Открыт памятник Минину и Пожарскому работы Ивана Мартоса.</span></li>
+        <li><b>1883</b><span>Исторический музей принимает первых посетителей.</span></li>
+        <li><b>1893</b><span>Открыты Верхние торговые ряды, нынешний ГУМ.</span></li>
+        <li><b>1930</b><span>Каменный мавзолей Алексея Щусева заменяет деревянный.</span></li>
+        <li><b>1937</b><span>На пяти башнях Кремля загораются рубиновые звёзды.</span></li>
+        <li><b>1990–1995</b><span>Площадь входит в список ЮНЕСКО. Казанский собор и Воскресенские ворота воссозданы.</span></li>
+        <li><b>Сегодня</b><span>Пешеходная площадь, место парадов, ярмарок и главного новогоднего катка.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="visit" class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="mono">Визит</span>
+          <h2>Как добраться</h2>
+        </div>
+        <p>Площадь пешеходная, вход свободный. Перед поездкой проверьте новости: на время мероприятий и подготовки к ним вход закрывают.</p>
+      </div>
+      <div class="visit">
+        <div class="card">
+          <h3><span class="sq" aria-hidden="true"></span>Метро</h3>
+          <ul>
+            <li>Охотный Ряд<small>линия 1, 5 минут пешком</small></li>
+            <li>Площадь Революции<small>линия 3, 5 минут пешком</small></li>
+            <li>Театральная<small>линия 2, 6 минут пешком</small></li>
+            <li>Китай-город<small>линии 6 и 7, 12 минут пешком</small></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="sq" aria-hidden="true"></span>Когда идти</h3>
+          <p>Утром до 10 часов людей меньше всего. Вечером включается подсветка соборов, башен и гирлянды ГУМа, как в ночном режиме модели.</p>
+          <p>Собор Василия Блаженного, Исторический музей и Мавзолей работают по своему расписанию и требуют отдельного входа.</p>
+        </div>
+        <div class="card">
+          <h3><span class="sq" aria-hidden="true"></span>Рядом</h3>
+          <ul>
+            <li>Александровский сад<small>Могила Неизвестного Солдата и смена почётного караула</small></li>
+            <li>Парк «Зарядье»<small>Парящий мост над Москвой-рекой</small></li>
+            <li>Никольская улица<small>Пешеходная улица от Казанского собора</small></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <p>Красная площадь 3D. Модель построена прямо в браузере из геометрии и процедурных текстур, в масштабе 1:1.</p>
+    <p class="mono">Москва · Красная площадь</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Sky.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
+<script src="scene.js"></script>
+
+</body></html>
